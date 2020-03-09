@@ -1,9 +1,10 @@
 import vk_api
+import random
 
 login = input('VK логин: ')
 password = input('VK пароль: ')
 
-vk_session = vk_api.VkApi(login, password)
+vk_session = vk_api.VkApi(login, password, app_id='2685278')
 vk_session.auth()
 
 vk = vk_session.get_api()
@@ -18,6 +19,7 @@ for k in vk.friends.get(fields='city')['items']:
     except:
         print(f' Найден друг: {k["first_name"]} {k["last_name"]} с ID {k["id"]}, его профиль - {is_closed}. Сейчас он {is_online}.')
 
+
 print('\nСписок сообществ, в которых вы состоите: ')
 
 for k in vk.groups.get()['items']:
@@ -26,6 +28,11 @@ for k in vk.groups.get()['items']:
 
 vk.wall.post(message=input('Введите сообщение, которое хотите запостить на Вашей стене: '))
 
+message = input('Сообщение, которое будет отправлено всем друзьям (введите 0 для отмены): ')
+if message != '0':
+    for friend in vk.friends.get()['items']:
+        vk.messages.send(user_id=friend, random_id=random.randint(0, 131767), message=message)
+              
 print('Информация о постах на Вашей стене: ')
 
 for k in vk.wall.get()['items']:
